@@ -15,8 +15,8 @@ import store from '../redux/store';
 import { logout } from '../redux/actions/auth'
 
 import axios from 'axios';
-axios.defaults.baseURL = 'http://127.0.0.1:5000';
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
+axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 
 

@@ -19,6 +19,8 @@ import { extractDataByKey, apiEndPoint, APIkey } from '../helpers/APIservices';
 var tickCountdown = 0;
 var updateInterval;
 const chartName = 'circleChart';
+axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
+axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const options = {
     durations: ['month','day'],

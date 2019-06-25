@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { USER_LOADING, USER_LOGOUT, USER_LOADED, USER_LOGIN, LOGIN_SUCCESS, GET_ERROR } from './types';
 import { ERRORS_HEADING } from './error'
-axios.defaults.baseURL = 'http://127.0.0.1:5000';
+axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 export const loadAdmin = () => (dispatch, getState) => {

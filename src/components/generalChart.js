@@ -16,7 +16,7 @@ import { extractFromTimestamp } from '../helpers/timeParser';
 
 
 //state template
-axios.defaults.baseURL = 'http://127.0.0.1:5000';
+axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const chartName = 'generalChart';
