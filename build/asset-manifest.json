@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5bc7b728.chunk.css",
+    "main.js": "/static/js/main.aa358d7c.chunk.js",
+    "main.js.map": "/static/js/main.aa358d7c.chunk.js.map",
+    "runtime~main.js": "/static/js/runtime~main.c5541365.js",
+    "runtime~main.js.map": "/static/js/runtime~main.c5541365.js.map",
+    "static/css/2.22a7d4ef.chunk.css": "/static/css/2.22a7d4ef.chunk.css",
+    "static/js/2.d25b3c9c.chunk.js": "/static/js/2.d25b3c9c.chunk.js",
+    "static/js/2.d25b3c9c.chunk.js.map": "/static/js/2.d25b3c9c.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.fa2c638a67af5461bda4837398aeff48.js": "/precache-manifest.fa2c638a67af5461bda4837398aeff48.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.22a7d4ef.chunk.css.map": "/static/css/2.22a7d4ef.chunk.css.map",
+    "static/css/main.5bc7b728.chunk.css.map": "/static/css/main.5bc7b728.chunk.css.map",
+    "static/media/logo_nk_dark.png": "/static/media/logo_nk_dark.c709324c.png"
+  }
+}
