@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import { Container, ListGroup } from 'react-bootstrap';
+import { Container, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
-import {secondaryDark} from '../helpers/colors';
+import { faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
+import { secondaryDark, mainLight } from '../helpers/colors';
 
-import {} from '../helpers/timeParser';
+import { } from '../helpers/timeParser';
 
-import {extractDataByKey} from '../helpers/APIservices'
+import { extractDataByKey } from '../helpers/APIservices'
 
 import axios from 'axios';
 axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const style = {
-    container:{
-        overflowY:'scroll',
+    container: {
+        overflowY: 'scroll',
         maxHeight: '20rem',
         backgroundColor: secondaryDark,
         color: '#aaaaaa'
@@ -29,17 +29,17 @@ const sastisfactionIcon = [faAngry, faFrown, faMeh, faSmile, faLaughBeam];
 const Comment = (props) => {
     let d = new Date(props.date);
 
-    return <p> {d.toLocaleString()} <FontAwesomeIcon icon={sastisfactionIcon[props.rated - 1]}/> {props.feedback} </p>
+    return <p > {d.toLocaleString()} <FontAwesomeIcon icon={sastisfactionIcon[props.rated - 1]} /> {props.feedback} </p>
 }
 
 export default class Index extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-            comments : []
+            comments: []
         }
     }
-    componentDidMount(){
+    componentDidMount() {
         this.update()
         setInterval(this.update, 1000);
     }
@@ -48,36 +48,43 @@ export default class Index extends Component {
         axios.get(
             'api/v1/dashboard/comment?',
             {
-                params:{
+                params: {
                     limit: limit
                 },
-                headers: { 
+                headers: {
                     "x-access-token": localStorage.getItem('token')
                 }
             }
         )
-        .then(res => res.data.data)
-        .then( data => {
-            this.setState({comments : data});
-            // this.state.comments.map(obj =>  <Comment rated={obj.rated} feedback={obj.comment} />  )
-        }
-            
-        )   
+            .then(res => res.data.data)
+            .then(data => {
+                this.setState({ comments: data });
+                // this.state.comments.map(obj =>  <Comment rated={obj.rated} feedback={obj.comment} />  )
+            }
+
+            )
     }
 
     render() {
-        
+
         return (
-            <Container style={style.container}>
-                <div style={{position:'absolute', top:0 , background:secondaryDark, width: '90%'}}>
-                    <h3> Recent comments </h3>
-                </div>
-                
-                <ListGroup variant="flush"  >
-                    {this.state.comments.map(obj => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} /> )}
-                </ListGroup>
+
+            
+            <Container >
+                <Row>
+                    <div style={{ position: 'sticky', top: 0, background: secondaryDark, width: '90%', height:'10%', color:mainLight }}>
+                        <h3> Recent comments </h3>
+                    </div>
+                </Row>
+
+                <Row style={{...style.container, maxHeight:'30vw'}}>
+                    <ListGroup variant='flush' >
+                        {this.state.comments.map(obj => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} />)}
+                    </ListGroup>
+                </Row>
 
             </Container>
+
         )
     }
 }

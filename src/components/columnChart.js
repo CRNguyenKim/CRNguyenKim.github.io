@@ -23,9 +23,9 @@ var updateInterval;
 
 var options = {
     modes: [],
-    durations: ['hour', 'month', 'day'],
+    durations: ['hour', 'day', 'month'],
     limits: [7, 12, 24],
-    timer: [3, 60, 3600],
+    timer: [10, 60, 3600],
     views: ['column', 'area', 'line'],
 
 }
@@ -247,7 +247,7 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight:'45vw' }}>
                 <ToolbarQuery 
                     onOptionChange={this.optionChange} 
                     options={options} 

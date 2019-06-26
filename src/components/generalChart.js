@@ -27,9 +27,9 @@ var tickCountdown = 0;
 
 const options = {
     modes: [],
-    durations: ['hour', 'month', 'day'],
+    durations: ['hour', 'day', 'month'],
     limits: [7, 12, 24],
-    timer: [3, 60, 3600],
+    timer: [10, 60, 3600],
     views: ['area', 'line'],
     categories: [],
 }
@@ -124,7 +124,7 @@ class Index extends Component {
                 const data = extractDataByKey(res, 'average');
                 const timestamps = extractDataByKey(res, timestampKey);
                 const categories = extractFromTimestamp(timestamps, duration)
-                const series = serialData(data, 'rating ' + rated, store.getState().generalDashboard.views);
+                const series = serialData(data, 'rating AVG', store.getState().generalDashboard.views);
                 store.dispatch(appendSeries(series, chartName));
                 // update ApexChart
                 ApexChart.exec(chartName, 'updateOptions', {
@@ -196,7 +196,7 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight:'45vw' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
                 <Chart options={this.state.optionsMixedChart}
                     series={this.props.options.data}

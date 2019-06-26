@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Button, ButtonGroup, Container, Row, Col, Form } from 'react-bootstrap';
 import { mainLight, secondaryDark } from '../helpers/colors';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCalendarAlt, faStopwatch, faListOl, faEye, faSyncAlt, faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
-import {secondsToHms} from '../helpers/timeParser';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faStopwatch, faListOl, faEye, faSyncAlt, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { secondsToHms } from '../helpers/timeParser';
 
 const style = {
     responsive: {
@@ -19,26 +19,26 @@ const style = {
 }
 
 const ICONS_MAP = {
-    'DURATIONS' : faCalendarAlt,
-    'TIMER' : faStopwatch,
-    'LIMITS' : faListOl,
-    'VIEWS' : faEye,
-    'LOCATIONS' : faMapMarkerAlt
+    'DURATIONS': faCalendarAlt,
+    'TIMER': faStopwatch,
+    'LIMITS': faListOl,
+    'VIEWS': faEye,
+    'LOCATIONS': faMapMarkerAlt
 }
 
 
 class RowOption extends Component {
     render() {
         return (
-                this.props.data.length ?
-                    this.props.dropdown ?
+            this.props.data.length ?
+                this.props.dropdown ?
                     <Form.Group controlId="exampleForm.ControlSelect1">
                         <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight }}>
                             <p style={{ margin: 0 }}> <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
                         </Col>
-                       
-                        <Form.Control as="select" onChange={(e) => this.props.onOptionChange(this.props.name, e.target.value)} 
-                         style={{backgroundColor: secondaryDark, color: '#ffffff'}}>
+
+                        <Form.Control as="select" onChange={(e) => this.props.onOptionChange(this.props.name, e.target.value)}
+                            style={{ backgroundColor: secondaryDark, color: '#ffffff' }}>
                             {
                                 this.props.data.map(val =>
                                     (<option
@@ -86,8 +86,8 @@ class ToolbarQuery extends Component {
 
 
     render() {
- 
-        const dropdown = this.props.dropdown ? this.props.dropdown : [] 
+
+        const dropdown = this.props.dropdown ? this.props.dropdown : []
         return (
             <Container fluid>
                 <Row>
@@ -101,7 +101,7 @@ class ToolbarQuery extends Component {
                                     onOptionChange={this.onOptionChange}
                                     selections={this.props.selections}
                                     dropdown={dropdown.includes(val)}
-    
+
                                 />
                             })
                         }
@@ -109,11 +109,11 @@ class ToolbarQuery extends Component {
 
                     <Col xs={12} sm={12} md={12} xl={4} lg={4}>
                         <Row style={{ ...style.responsive, ...style.rowOption }}>
-                            <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight, ...style.responsive,}}>
-                                <p style={{ margin: 0 }}> <FontAwesomeIcon icon={faSyncAlt}/>  </p>
+                            <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight, ...style.responsive, }}>
+                                <p style={{ margin: 0 }}> <FontAwesomeIcon icon={faSyncAlt} />  </p>
                             </Col>
                             <Col xs={9} md={9} xl={9} sm={9} lg={9} style={{ color: mainLight, ...style.responsive, justifyContent: 'center' }}>
-                                <p style={{ margin: 0 }}>{secondsToHms(this.props.countdown) }</p>
+                                <p style={{ margin: 0 }}>{secondsToHms(this.props.countdown)}</p>
                             </Col>
                         </Row>
                     </Col>

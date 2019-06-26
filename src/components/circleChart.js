@@ -24,7 +24,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencod
 
 const options = {
     durations: ['month','day'],
-    timer: [3, 60, 3600],
+    timer: [10, 60, 3600],
 }
 
 
