@@ -41,7 +41,7 @@ class Index extends Component {
 
 
         this.state = {
-            locations : [],
+            locations: [],
             series: [],
             optionsMixedChart: {
                 chart: {
@@ -78,7 +78,7 @@ class Index extends Component {
                         lines: {
                             show: true
                         }
-                    },  
+                    },
                 },
                 theme: {
                     mode: 'dark',
@@ -108,29 +108,30 @@ class Index extends Component {
     componentDidMount(props) {
         this.getLocations();
         Object.keys(options).map((obj) => store.dispatch(setAPIOption(obj, options[obj][0], chartName)));
+        store.dispatch(setAPIOption('durations', options['durations'][0], chartName))
         this.update()
         this.resetTimer()
     }
 
     getLocations = () => {
         axios.get(`${apiEndPoint}/location?`,
-        {
-            params: {},
-            headers: { 
-                "x-access-token": this.props.auth.token
-            }
-        })
-        .then(res => res.data.data)
-        .then(data =>  {
-            options.locations = extractDataByKey(data, 'location');
-        })
+            {
+                params: {},
+                headers: {
+                    "x-access-token": this.props.auth.token
+                }
+            })
+            .then(res => res.data.data)
+            .then(data => {
+                options.locations = extractDataByKey(data, 'location');
+            })
     }
 
 
-    updateDataByType = (kind = null, type = null, duration = 'hour', limit = null, location=null) => {
+    updateDataByType = (kind = null, type = null, duration = null, limit = null, location = null) => {
         const keyMap = {
-            'avg' : 'average',
-            'total' : 'total',
+            'avg': 'average',
+            'total': 'total',
         }
 
         axios.get(`${apiEndPoint}/${kind}?`,
@@ -141,7 +142,7 @@ class Index extends Component {
                     limit: limit,
                     location: location
                 },
-                headers: { 
+                headers: {
                     "x-access-token": this.props.auth.token
                 }
             })
@@ -154,7 +155,7 @@ class Index extends Component {
                 store.dispatch(appendSeries(series, chartName));
 
                 // update ApexChart
-                if (chartName === 'columnChart'){
+                if (chartName === 'columnChart') {
                     ApexChart.exec(chartName, 'updateOptions', {
                         xaxis: {
                             categories: categories
@@ -169,19 +170,18 @@ class Index extends Component {
                             }
                         })
                     }
-                }
-                
 
-                
-                else {
-                    if (this.props.options.series.length === 5) {
-                        ApexChart.exec(chartName, 'updateOptions', {
-                            yaxis: {
-                                min: 0,
-                                tickAmount: 5,
-                                max: Math.max(...this.props.options.series.map((obj) => Math.max(...obj.data)))
-                            }
-                        })
+
+                    else {
+                        if (this.props.options.series.length === 5) {
+                            ApexChart.exec(chartName, 'updateOptions', {
+                                yaxis: {
+                                    min: 0,
+                                    tickAmount: 5,
+                                    max: Math.max(...this.props.options.series.map((obj) => Math.max(...obj.data)))
+                                }
+                            })
+                        }
                     }
                 }
                 if (this.props.options.series.length === 5) {
@@ -192,7 +192,7 @@ class Index extends Component {
                     })
                 }
             })
-            
+
     }
 
     updateCountdown = () => {
@@ -208,8 +208,8 @@ class Index extends Component {
     resetTimer = () => {
         if (updateInterval)
             clearInterval(updateInterval);
-            tickCountdown = store.getState().columnDashboard.timer;
-            updateInterval = setInterval(this.updateCountdown, 1000)
+        tickCountdown = store.getState().columnDashboard.timer;
+        updateInterval = setInterval(this.updateCountdown, 1000)
     }
 
     update = () => {
@@ -217,16 +217,14 @@ class Index extends Component {
         const overrideOptions = {
             modes: 'total'
         }
-        this.props.options.durations  = this.props.options.durations ? this.props.options.durations : options['durations'][0]
-        this.props.options.limits  = this.props.options.limits ? this.props.options.limits : options['limits'][0]
-        this.props.options.locations  = this.props.options.locations ? this.props.options.locations : options['locations'][0]
+ 
         axios.all(
             [1, 2, 3, 4, 5].map(rating => this.updateDataByType(
                 overrideOptions.modes,
                 rating,
-                this.props.options.durations,
-                this.props.options.limits,
-                this.props.options.locations
+                store.getState().columnDashboard.durations,
+                store.getState().columnDashboard.limits,
+                store.getState().columnDashboard.locations,
             ))
         )
             .then(res => store.dispatch(setSeries([], chartName)))
@@ -237,7 +235,7 @@ class Index extends Component {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
         this.resetTimer()
-    
+
         // switch (option) {
         //     case 'timer':
         //         this.resetTimer()
@@ -250,17 +248,17 @@ class Index extends Component {
         //     default:
         //         break
         // }
-        
-        
-        
+
+
+
     }
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight:'45vw' }}>
-                <ToolbarQuery 
-                    onOptionChange={this.optionChange} 
-                    options={options} 
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
+                <ToolbarQuery
+                    onOptionChange={this.optionChange}
+                    options={options}
                     selections={this.props.options}
                     dropdown={['locations']}
                     countdown={this.props.options.countdown}

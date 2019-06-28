@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Chart from 'react-apexcharts';
 import ApexChart from 'apexcharts';
-import { secondaryDark,  mainLight } from '../helpers/colors';
+import { secondaryDark, mainLight } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
 
@@ -10,8 +10,8 @@ import axios from 'axios';
 
 import { connect } from 'react-redux';
 import store from '../redux/store';
-import { setAPIOption, appendSeries,  setData, setTimeCountdown } from '../redux/actions/dashboards';
-import { extractDataByKey, serialData, timestampKey, apiEndPoint} from '../helpers/APIservices';
+import { setAPIOption, appendSeries, setData, setTimeCountdown } from '../redux/actions/dashboards';
+import { extractDataByKey, serialData, timestampKey, apiEndPoint } from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
 
@@ -99,7 +99,7 @@ class Index extends Component {
 
     componentDidMount(props) {
         Object.keys(options).map((obj) => store.dispatch(setAPIOption(obj, options[obj][0], chartName)));
-        this.updateDataByType(options['modes'][0], 1, options['durations'][0], options['limits'][0] )
+        this.updateDataByType(options['modes'][0], 1, options['durations'][0], options['limits'][0])
         this.resetTimer()
     }
 
@@ -107,7 +107,7 @@ class Index extends Component {
         ApexChart.exec(chartName, 'resetSeries')
     }
 
-    updateDataByType = (kind = null, rated = null, duration = 'hour', limit = null) => {
+    updateDataByType = (kind = null, rated = null, duration = null, limit = null) => {
         axios.get(`${apiEndPoint}/avg?`,
             {
                 params: {
@@ -127,28 +127,29 @@ class Index extends Component {
                 const series = serialData(data, 'rating AVG', store.getState().generalDashboard.views);
                 store.dispatch(appendSeries(series, chartName));
                 // update ApexChart
-                if (chartName === 'generalChart'){
-                ApexChart.exec(chartName, 'updateOptions', {
-                    xaxis: {
-                        categories: categories
-                    }
-                });
-
-                if (kind === 'avg') {
+                if (chartName === 'generalChart') {
                     ApexChart.exec(chartName, 'updateOptions', {
-                        yaxis: {
-                            min: 0,
-                            tickAmount: 5,
-                            max: 5
+                        xaxis: {
+                            categories: categories
                         }
-                    })
-                }}
+                    });
+
+                    if (kind === 'avg') {
+                        ApexChart.exec(chartName, 'updateOptions', {
+                            yaxis: {
+                                min: 0,
+                                tickAmount: 5,
+                                max: 5
+                            }
+                        })
+                    }
+                }
                 store.dispatch(setData([series], chartName))
             })
-            
+
     }
 
-    
+
     updateCountdown = () => {
         if (tickCountdown === 0) {
             this.update();
@@ -162,8 +163,8 @@ class Index extends Component {
     resetTimer = () => {
         if (updateInterval)
             clearInterval(updateInterval);
-            tickCountdown = store.getState().generalDashboard.timer;
-            updateInterval = setInterval(this.updateCountdown, 1000);
+        tickCountdown = store.getState().generalDashboard.timer;
+        updateInterval = setInterval(this.updateCountdown, 1000);
 
     }
 
@@ -181,11 +182,11 @@ class Index extends Component {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
         this.resetTimer()
-        
+
         // this.setState({ series: this.state.series })
         // switch (option) {
         //     case 'timer':
-                
+
         //         break
 
         //     case 'views':
@@ -201,7 +202,7 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight:'45vw' }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
                 <Chart options={this.state.optionsMixedChart}
                     series={this.props.options.data}
