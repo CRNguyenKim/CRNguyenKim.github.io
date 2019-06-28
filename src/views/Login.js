@@ -33,23 +33,24 @@ const style = {
 
 
 class Index extends Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             username: '',
             password: '',
         }
     }
 
+    componentDidMount(){
+        this.setState({isAuthenticated: this.props.isAuthenticated})
+    }
 
     render(props) {
-
         return (
             this.props.isAuthenticated ?
             <Redirect to='/'></Redirect>
             :
             <Container>
-                
                 <Row style={style.responsive}>
                     <Col xs={10} sm={10} md={12} lg={8} xl={8} style={{...style.brand}}>
                         <h5 style={{ fontSize: '3vw', color: mainLight, whiteSpace:'nowrap' }}>NGUYENKIM RATING DASHBOARD</h5>
@@ -110,7 +111,6 @@ const mapStateToProps = (state) => (
     {
         isAuthenticated: state.auth.isAuthenticated,
         messages: state.messages
-        
     }
 )
 

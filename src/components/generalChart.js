@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Chart from 'react-apexcharts';
 import ApexChart from 'apexcharts';
-import { secondaryDark, ratingColors, mainLight } from '../helpers/colors';
+import { secondaryDark,  mainLight } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
 
@@ -10,8 +10,8 @@ import axios from 'axios';
 
 import { connect } from 'react-redux';
 import store from '../redux/store';
-import { setAPIOption, appendSeries, setSeries, setData, setTimeCountdown } from '../redux/actions/dashboards';
-import { extractDataByKey, serialData, timestampKey, apiEndPoint, configHeader, APIkey } from '../helpers/APIservices';
+import { setAPIOption, appendSeries,  setData, setTimeCountdown } from '../redux/actions/dashboards';
+import { extractDataByKey, serialData, timestampKey, apiEndPoint} from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
 
@@ -23,7 +23,7 @@ const chartName = 'generalChart';
 const strokeWidth = 2;
 
 var updateInterval;
-var tickCountdown = 0;
+var tickCountdown = 10;
 
 const options = {
     modes: [],
@@ -99,7 +99,7 @@ class Index extends Component {
 
     componentDidMount(props) {
         Object.keys(options).map((obj) => store.dispatch(setAPIOption(obj, options[obj][0], chartName)));
-        this.update()
+        this.updateDataByType(options['modes'][0], 1, options['durations'][0], options['limits'][0] )
         this.resetTimer()
     }
 
@@ -107,7 +107,7 @@ class Index extends Component {
         ApexChart.exec(chartName, 'resetSeries')
     }
 
-    updateDataByType = (kind = null, rated = null, duration = null, limit = null) => {
+    updateDataByType = (kind = null, rated = null, duration = 'hour', limit = null) => {
         axios.get(`${apiEndPoint}/avg?`,
             {
                 params: {
@@ -127,6 +127,7 @@ class Index extends Component {
                 const series = serialData(data, 'rating AVG', store.getState().generalDashboard.views);
                 store.dispatch(appendSeries(series, chartName));
                 // update ApexChart
+                if (chartName === 'generalChart'){
                 ApexChart.exec(chartName, 'updateOptions', {
                     xaxis: {
                         categories: categories
@@ -141,10 +142,10 @@ class Index extends Component {
                             max: 5
                         }
                     })
-                }
+                }}
                 store.dispatch(setData([series], chartName))
             })
-            .catch(err => console.log(err))
+            
     }
 
     
@@ -159,18 +160,19 @@ class Index extends Component {
     }
 
     resetTimer = () => {
-        clearInterval(updateInterval);
-        tickCountdown = store.getState().generalDashboard.timer;
-        updateInterval = setInterval(this.updateCountdown, 1000);
+        if (updateInterval)
+            clearInterval(updateInterval);
+            tickCountdown = store.getState().generalDashboard.timer;
+            updateInterval = setInterval(this.updateCountdown, 1000);
 
     }
 
     update = () => {
         this.updateDataByType(
-            this.props.options.modes,
+            store.getState().generalDashboard.modes,
             1,
-            this.props.options.durations,
-            this.props.options.limits
+            store.getState().generalDashboard.durations,
+            store.getState().generalDashboard.limits
         )
     }
 
@@ -178,18 +180,21 @@ class Index extends Component {
     optionChange = (option, value) => {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
-        this.setState({ series: this.state.series })
-        switch (option) {
-            case 'timer':
-                this.resetTimer()
-                break
+        this.resetTimer()
+        
+        // this.setState({ series: this.state.series })
+        // switch (option) {
+        //     case 'timer':
+                
+        //         break
 
-            case 'views':
-                break
+        //     case 'views':
+        //         break
 
-            default:
-                break
-        }
+        //     default:
+        //         break
+        // }
+
 
 
     }

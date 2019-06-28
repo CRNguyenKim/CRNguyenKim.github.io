@@ -22,7 +22,7 @@ const auth = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 isAuthenticated: true,
-                user: action.payload
+                user: action.payload.username
             }; 
 
         case LOGIN_SUCCESS:
@@ -42,7 +42,7 @@ const auth = (state = initialState, action) => {
                 ...state,
                 token: null,
                 user: null,
-                isAuthenticated: null,
+                isAuthenticated: false,
                 isLoading: false
             }
 

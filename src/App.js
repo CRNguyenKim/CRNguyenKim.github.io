@@ -15,7 +15,7 @@ class App extends Component {
         store.dispatch(loadAdmin())
     };
 
-    render(props) {
+    render() {
         return (
             <Router>
                 <Switch>

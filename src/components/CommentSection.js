@@ -6,8 +6,6 @@ import { secondaryDark, mainLight } from '../helpers/colors';
 
 import { } from '../helpers/timeParser';
 
-import { extractDataByKey } from '../helpers/APIservices'
-
 import axios from 'axios';
 axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -45,6 +43,7 @@ export default class Index extends Component {
     }
 
     update = () => {
+
         axios.get(
             'api/v1/dashboard/comment?',
             {
@@ -79,7 +78,7 @@ export default class Index extends Component {
 
                 <Row style={{...style.container, maxHeight:'30vw'}}>
                     <ListGroup variant='flush' >
-                        {this.state.comments.map(obj => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} />)}
+                        {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
                     </ListGroup>
                 </Row>
 

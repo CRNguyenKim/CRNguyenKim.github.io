@@ -14,9 +14,10 @@ import {setAPIOption, setData} from '../redux/actions/dashboards';
 import {connect} from 'react-redux';
 import {setTimeCountdown} from '../redux/actions/dashboards'
 import { extractDataByKey, apiEndPoint, APIkey } from '../helpers/APIservices';
+import { PassThrough } from 'stream';
 
 //state template
-var tickCountdown = 0;
+var tickCountdown = 10;
 var updateInterval;
 const chartName = 'circleChart';
 axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
@@ -109,13 +110,13 @@ class Index extends Component {
 
     componentDidMount(){
         this.getLocations()
-        Object.keys(options).map( obj => { store.dispatch(setAPIOption(obj, options[obj][0], chartName))})
+        Object.keys(options).map( obj =>  store.dispatch(setAPIOption(obj, options[obj][0], chartName)))
         this.update()
         this.resetTimer()
     }
 
 
-    updateDataByType(type, duration, newData, location=''){
+    updateDataByType(type, duration='hour', newData, location=''){
         const limit = 1;
         const selection = 'total'
         axios.get(`${apiEndPoint}/${selection}?`,
@@ -154,13 +155,17 @@ class Index extends Component {
     }
 
     resetTimer = () => {
-        clearInterval(updateInterval);
-        tickCountdown = store.getState().circleDashboard.timer;
-        updateInterval = setInterval(this.updateCountdown, 1000)
+        if (updateInterval)
+            clearInterval(updateInterval);
+            tickCountdown = store.getState().circleDashboard.timer;
+            updateInterval = setInterval(this.updateCountdown, 1000)
     }
 
     update = () => {
         var newData = []
+
+        this.props.options.durations  = this.props.options.durations ? this.props.options.durations : options['durations'][0]
+        this.props.options.locations  = this.props.options.locations ? this.props.options.locations : options['locations'][0]
         axios.all(
             [1,2,3,4,5].map( val => 
                 this.updateDataByType(val, this.props.options.durations, newData, this.props.options.locations))

@@ -8,7 +8,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import store from '../redux/store';
 import { setAPIOption, appendSeries, setSeries, setTimeCountdown } from '../redux/actions/dashboards';
-import { extractDataByKey, serialData, timestampKey, apiEndPoint, APIkey } from '../helpers/APIservices';
+import { extractDataByKey, serialData, timestampKey, apiEndPoint } from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
 //state template
@@ -18,7 +18,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencod
 const chartName = 'columnChart';
 const strokeWidth = 2;
 
-var tickCountdown = 0;
+var tickCountdown = 10;
 var updateInterval;
 
 var options = {
@@ -106,7 +106,7 @@ class Index extends Component {
 
 
     componentDidMount(props) {
-        this.getLocations()
+        this.getLocations();
         Object.keys(options).map((obj) => store.dispatch(setAPIOption(obj, options[obj][0], chartName)));
         this.update()
         this.resetTimer()
@@ -127,7 +127,7 @@ class Index extends Component {
     }
 
 
-    updateDataByType = (kind = null, type = null, duration = null, limit = null, location=null) => {
+    updateDataByType = (kind = null, type = null, duration = 'hour', limit = null, location=null) => {
         const keyMap = {
             'avg' : 'average',
             'total' : 'total',
@@ -154,21 +154,25 @@ class Index extends Component {
                 store.dispatch(appendSeries(series, chartName));
 
                 // update ApexChart
-                ApexChart.exec(chartName, 'updateOptions', {
-                    xaxis: {
-                        categories: categories
-                    }
-                });
-
-                if (kind === 'avg') {
+                if (chartName === 'columnChart'){
                     ApexChart.exec(chartName, 'updateOptions', {
-                        yaxis: {
-                            min: 0,
-                            tickAmount: 5,
-                            max: 5
+                        xaxis: {
+                            categories: categories
                         }
-                    })
+                    });
+                    if (kind === 'avg') {
+                        ApexChart.exec(chartName, 'updateOptions', {
+                            yaxis: {
+                                min: 0,
+                                tickAmount: 5,
+                                max: 5
+                            }
+                        })
+                    }
                 }
+                
+
+                
                 else {
                     if (this.props.options.series.length === 5) {
                         ApexChart.exec(chartName, 'updateOptions', {
@@ -188,7 +192,7 @@ class Index extends Component {
                     })
                 }
             })
-            .catch(err => console.log(err))
+            
     }
 
     updateCountdown = () => {
@@ -202,16 +206,20 @@ class Index extends Component {
     }
 
     resetTimer = () => {
-        clearInterval(updateInterval);
-        tickCountdown = store.getState().columnDashboard.timer;
-        updateInterval = setInterval(this.updateCountdown, 1000)
+        if (updateInterval)
+            clearInterval(updateInterval);
+            tickCountdown = store.getState().columnDashboard.timer;
+            updateInterval = setInterval(this.updateCountdown, 1000)
     }
 
     update = () => {
+
         const overrideOptions = {
             modes: 'total'
         }
-
+        this.props.options.durations  = this.props.options.durations ? this.props.options.durations : options['durations'][0]
+        this.props.options.limits  = this.props.options.limits ? this.props.options.limits : options['limits'][0]
+        this.props.options.locations  = this.props.options.locations ? this.props.options.locations : options['locations'][0]
         axios.all(
             [1, 2, 3, 4, 5].map(rating => this.updateDataByType(
                 overrideOptions.modes,
@@ -228,19 +236,21 @@ class Index extends Component {
     optionChange = (option, value) => {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
+        this.resetTimer()
     
-        switch (option) {
-            case 'timer':
-                this.resetTimer()
-                break
+        // switch (option) {
+        //     case 'timer':
+        //         this.resetTimer()
+        //         break
 
-            case 'views':
-                this.setState({ series: this.state.series })
-                break
+        //     case 'views':
+        //         this.setState({ series: this.state.series })
+        //         break
 
-            default:
-                break
-        }
+        //     default:
+        //         break
+        // }
+        
         
         
     }
