@@ -19,7 +19,7 @@ const style = {
     }
 }
 
-var intervalCall;
+var updateInterval;
 
 const limit = 20;
 const sastisfactionIcon = [faAngry, faFrown, faMeh, faSmile, faLaughBeam];
@@ -39,7 +39,7 @@ export default class Index extends Component {
     }
     componentDidMount() {
         this.update()
-        intervalCall = setInterval(this.update, 1000);
+        updateInterval = setInterval(this.update, 1000);
     }
 
     update = () => {
@@ -63,8 +63,10 @@ export default class Index extends Component {
 
             )
     }
+
     componentWillUnmount(){
-        clearInterval(intervalCall)
+        if(updateInterval)
+            clearInterval(updateInterval)
     }
     render() {
 

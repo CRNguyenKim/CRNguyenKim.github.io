@@ -187,7 +187,8 @@ class Index extends Component {
         this.resetTimer()
     }
     componentWillUnmount(){
-        clearInterval(updateInterval)
+        if(updateInterval)
+            clearInterval(updateInterval)
     }
 
     render(props) {

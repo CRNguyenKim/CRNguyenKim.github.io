@@ -37,7 +37,7 @@ class RowOption extends Component {
                             <p style={{ margin: 0 }}> <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
                         </Col>
 
-                        <Form.Control as="select" onChange={(e) => this.props.onOptionChange(this.props.name, e.target.value)}
+                        <Form.Control as="select" onChange={(e) => { this.props.onOptionChange(this.props.name, e.target.value) }}
                             style={{ backgroundColor: secondaryDark, color: '#ffffff' }}>
                             {
                                 this.props.data.map(val =>

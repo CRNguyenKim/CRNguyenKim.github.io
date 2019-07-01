@@ -26,6 +26,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencod
 const options = {
     durations: ['day','month'],
     timer: [10, 60, 3600],
+    locations : []
 }
 
 
@@ -95,6 +96,7 @@ class Index extends Component {
     
 
     getLocations = () => {
+        var firstOption = 'all';
         axios.get(`${apiEndPoint}/location?`,
         {
             params: {},
@@ -103,8 +105,8 @@ class Index extends Component {
             }
         })
         .then(res => res.data.data)
-        .then(data =>  {
-            options.locations = extractDataByKey(data, 'location');
+        .then(data =>  {       
+            options.locations = [firstOption].concat(extractDataByKey(data, 'location'));
         })
     }
 
@@ -138,7 +140,9 @@ class Index extends Component {
             newData.push({ data : data, name: type})
             if (newData.length === 5){
                 newData.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0));
+                // ApexCharts.exec(chartName, 'updateSeries', extractDataByKey(newData, 'data'), chartName);
                 store.dispatch(setData( extractDataByKey(newData, 'data'), chartName))
+                
             }
         })
         
@@ -157,32 +161,34 @@ class Index extends Component {
     resetTimer = () => {
         if (updateInterval)
             clearInterval(updateInterval);
-            tickCountdown = store.getState().circleDashboard.timer;
-            updateInterval = setInterval(this.updateCountdown, 1000)
+        tickCountdown = store.getState().circleDashboard.timer;
+        updateInterval = setInterval(this.updateCountdown, 1000)
     }
 
     update = () => {
         var newData = []
-
-        this.props.options.durations  = this.props.options.durations ? this.props.options.durations : options['durations'][0]
-        this.props.options.locations  = this.props.options.locations ? this.props.options.locations : options['locations'][0]
+        
+        let duration  = store.getState().circleDashboard.durations ? store.getState().circleDashboard.durations : options['durations'][0]
+        let location  = store.getState().circleDashboard.locations ? store.getState().circleDashboard.locations : options['locations'][0]
+        if (location === 'all'){
+            location = ''
+        }
         axios.all(
             [1,2,3,4,5].map( val => 
-                this.updateDataByType(val, this.props.options.durations, newData, this.props.options.locations))
+                this.updateDataByType(val, duration, newData, location))
         )
     }
 
     optionChange = (option, value) => {
         store.dispatch(setAPIOption(option, value, chartName));
-        this.update()
-        this.resetTimer()
+        
+        this.update();
+        this.resetTimer();
+        
 
         switch (option) {
             case 'timer':
                 
-                break
-
-            case 'views':
                 break
 
             default:
@@ -191,9 +197,9 @@ class Index extends Component {
     }
 
     componentWillUnmount(){
-        clearInterval(updateInterval)
+        if(updateInterval)
+            clearInterval(updateInterval)
     }
-
     render(props) {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark }}>

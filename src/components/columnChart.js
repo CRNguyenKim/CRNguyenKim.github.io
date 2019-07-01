@@ -241,7 +241,8 @@ class Index extends Component {
 
     }
     componentWillUnmount(){
-        clearInterval(updateInterval)
+        if(updateInterval)
+            clearInterval(updateInterval)
     }
     render(props) {
         return (
