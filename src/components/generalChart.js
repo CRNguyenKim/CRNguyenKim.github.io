@@ -127,7 +127,7 @@ class Index extends Component {
                 const series = serialData(data, 'rating AVG', store.getState().generalDashboard.views);
                 store.dispatch(appendSeries(series, chartName));
                 // update ApexChart
-                if (chartName === 'generalChart') {
+                try {
                     ApexChart.exec(chartName, 'updateOptions', {
                         xaxis: {
                             categories: categories
@@ -143,6 +143,9 @@ class Index extends Component {
                             }
                         })
                     }
+                }
+                catch (err){
+
                 }
                 store.dispatch(setData([series], chartName))
             })
@@ -182,22 +185,9 @@ class Index extends Component {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
         this.resetTimer()
-
-        // this.setState({ series: this.state.series })
-        // switch (option) {
-        //     case 'timer':
-
-        //         break
-
-        //     case 'views':
-        //         break
-
-        //     default:
-        //         break
-        // }
-
-
-
+    }
+    componentWillUnmount(){
+        clearInterval(updateInterval)
     }
 
     render(props) {

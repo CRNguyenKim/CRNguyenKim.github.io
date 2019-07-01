@@ -24,7 +24,7 @@ axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const options = {
-    durations: ['month','day'],
+    durations: ['day','month'],
     timer: [10, 60, 3600],
 }
 
@@ -188,6 +188,10 @@ class Index extends Component {
             default:
                 break
         }
+    }
+
+    componentWillUnmount(){
+        clearInterval(updateInterval)
     }
 
     render(props) {

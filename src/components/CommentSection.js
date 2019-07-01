@@ -39,7 +39,7 @@ export default class Index extends Component {
     }
     componentDidMount() {
         this.update()
-        setInterval(this.update, 1000);
+        intervalCall = setInterval(this.update, 1000);
     }
 
     update = () => {
@@ -63,7 +63,9 @@ export default class Index extends Component {
 
             )
     }
-
+    componentWillUnmount(){
+        clearInterval(intervalCall)
+    }
     render() {
 
         return (

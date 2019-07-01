@@ -155,7 +155,7 @@ class Index extends Component {
                 store.dispatch(appendSeries(series, chartName));
 
                 // update ApexChart
-                if (chartName === 'columnChart') {
+                try {
                     ApexChart.exec(chartName, 'updateOptions', {
                         xaxis: {
                             categories: categories
@@ -183,6 +183,9 @@ class Index extends Component {
                             })
                         }
                     }
+                    }
+                catch (err){
+
                 }
                 if (this.props.options.series.length === 5) {
                     const newSeries = this.props.options.series.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0))
@@ -236,23 +239,10 @@ class Index extends Component {
         this.update()
         this.resetTimer()
 
-        // switch (option) {
-        //     case 'timer':
-        //         this.resetTimer()
-        //         break
-
-        //     case 'views':
-        //         this.setState({ series: this.state.series })
-        //         break
-
-        //     default:
-        //         break
-        // }
-
-
-
     }
-
+    componentWillUnmount(){
+        clearInterval(updateInterval)
+    }
     render(props) {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
