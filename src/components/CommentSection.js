@@ -71,23 +71,18 @@ export default class Index extends Component {
     render() {
 
         return (
-
-            
             <Container >
                 <Row>
                     <div style={{ position: 'sticky', top: 0, background: secondaryDark, width: '90%', height:'10%', color:mainLight }}>
                         <h3> Recent comments </h3>
                     </div>
                 </Row>
-
                 <Row style={{...style.container, maxHeight:'30vw'}}>
                     <ListGroup variant='flush' >
                         {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
                     </ListGroup>
                 </Row>
-
             </Container>
-
         )
     }
 }
