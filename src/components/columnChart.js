@@ -85,12 +85,12 @@ class Index extends Component {
                 },
                 legend: {
                     offsetX: 0,
-                    offsetY: -20,
-                    height: 30,
+                    offsetY: -10,
+                    height: 50,
                     markers: {
-                        width: 20,
-                        height: 10,
-                        radius: 12,
+                        width: 25,
+                        height: 20,
+                        radius: 5,
                     }
                 },
                 fill: {
