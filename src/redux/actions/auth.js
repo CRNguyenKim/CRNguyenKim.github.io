@@ -10,8 +10,9 @@ export const loadAdmin = () => (dispatch, getState) => {
     const token = getState().auth.token;
 
     axios.get('/api/v1/auth/user', {
+        params: {},
         headers: {
-            'x-access-token': token,
+            'x-access-token': token
         }
     })
         .then(res => dispatch({
@@ -26,7 +27,7 @@ export const loadAdmin = () => (dispatch, getState) => {
                         [ERRORS_HEADING.severError]: 'Sever is not responding!'
                     }
                 })
-            }
+        }
         )
 }
 
@@ -60,7 +61,7 @@ export const login = (username, password) => dispatch => {
                         [ERRORS_HEADING.severError]: 'Sever is not responding!'
                     }
                 })
-            }
+        }
         )
 }
 
