@@ -12,7 +12,6 @@ export const loadAdmin = () => (dispatch, getState) => {
     axios.get('/api/v1/auth/user', {
         headers: {
             'x-access-token': token,
-            "Content-Type": "application/json"
         }
     })
         .then(res => dispatch({
