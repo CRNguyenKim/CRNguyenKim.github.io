@@ -73,7 +73,7 @@ export default class Index extends Component {
                     })
             })
             .catch(err => {
-                if(err.response.status === 401){
+                if(err.response && err.response.status === 401){
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -95,17 +95,26 @@ export default class Index extends Component {
                     </div>
                 </Row>
                 <Row style={{ ...style.container, maxHeight: '30vw' }}>
-                    <ListGroup variant='flush' >
                         {
                             this.state.dataError === UNAUTHORIZED &&
-                            <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
+                            <Badge variant="danger">
+                                <h2>
+                                Couldn't retrieve data from sever. Make sure your account is admin account!
+                                </h2>
+                            </Badge>
                         }
                         {
-                            this.state.dataError === NODATA &&
-                            <Badge variant="secondary">Data is empty!</Badge>
+                            this.state.dataError === NODATA ?
+                            <Badge variant="secondary" style={{width:'100%'}}>
+                                <h2>
+                                Data is empty!
+                                </h2>
+                            </Badge> :
+                            <ListGroup variant='flush' >
+                        
+                            {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
+                            </ListGroup>
                         }
-                        {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
-                    </ListGroup>
                 </Row>
             </Container>
         )

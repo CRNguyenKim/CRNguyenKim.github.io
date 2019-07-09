@@ -161,7 +161,7 @@ class Index extends Component {
                
             })
             .catch(err => {
-                if(err.response.status === 401){
+                if(err.response && err.response.status === 401){
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -211,19 +211,24 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', transition:'0.5s' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
                 {
-                    this.state.dataError === UNAUTHORIZED && 
+                    this.state.dataError === UNAUTHORIZED &&
                     <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
                 }
                 {
-                    this.state.dataError === NODATA &&
-                    <Badge variant="secondary">Data is empty!</Badge>
+                    this.state.dataError === NODATA && this.state.dataError !== UNAUTHORIZED ?
+                    <Badge variant="secondary">
+                        <h2>
+                            Data is empty!
+                        </h2>
+                    </Badge> :
+                    <Chart options={this.state.optionsMixedChart}
+                    series={this.props.options.data}
+                    type='line' />
                 }
-                <Chart options={this.state.optionsMixedChart}
-                       series={this.props.options.data}
-                       type='line' />
+                
             </div>
         );
     }

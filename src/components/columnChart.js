@@ -216,7 +216,7 @@ class Index extends Component {
                 }
             })
             .catch(err => {
-                if (err.response.status === 401) {
+                if (err.response && err.response.status === 401) {
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -274,7 +274,7 @@ class Index extends Component {
     }
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh' }}>
                 <ToolbarQuery
                     onOptionChange={this.optionChange}
                     options={options}
@@ -284,13 +284,20 @@ class Index extends Component {
                 />
                 {
                     this.state.dataError === UNAUTHORIZED &&
-                    <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
+                    <Badge variant="danger">
+                        <h2>Couldn't retrieve data from sever. Make sure your account is admin account!</h2>
+                    </Badge>
                 }
                 {
-                    this.state.dataError === NODATA &&
-                    <Badge variant="secondary">Data is empty!</Badge>
+                    this.state.dataError === NODATA && this.state.dataError !== UNAUTHORIZED?
+                    <Badge variant="secondary">
+                        <h2>
+                        Data is empty!
+                        </h2>
+                    </Badge> :
+                    <Chart options={this.state.optionsMixedChart} series={this.state.series} type='bar' />
                 }
-                <Chart options={this.state.optionsMixedChart} series={this.state.series} type='bar' />
+                
             </div>
         );
     }
