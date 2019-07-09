@@ -159,6 +159,13 @@ class Index extends Component {
                 }
 
             })
+            .catch(err => {
+                if(err.response.status === 401){
+                    this.setState({
+                        dataError: UNAUTHORIZED
+                    })
+                }
+            })
 
     }
 
