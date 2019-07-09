@@ -128,17 +128,10 @@ class Index extends Component {
             .then(res => res.data.data)
             .then(data => {
                 options.locations = extractDataByKey(data, 'location');
-                if (Math.max(...data) === 0)
-                    this.setState({
-                        dataError: NODATA
-                    })
-                else
-                    this.setState({
-                        dataError: ''
-                    })
+
             })
             .catch(err => {
-                if(err.response.status === 401){
+                if (err.response.status === 401) {
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -212,8 +205,24 @@ class Index extends Component {
                     this.setState({
                         series: newSeries
                     })
+                    if (Math.max(...newSeries.map(obj => Math.max(...obj.data))) === 0)
+                        this.setState({
+                            dataError: NODATA
+                        })
+                    else
+                        this.setState({
+                            dataError: ''
+                        })
                 }
             })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    this.setState({
+                        dataError: UNAUTHORIZED
+                    })
+                }
+            })
+            
 
     }
 
