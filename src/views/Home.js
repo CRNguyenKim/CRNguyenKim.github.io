@@ -15,8 +15,8 @@ import store from '../redux/store';
 import { logout } from '../redux/actions/auth'
 
 import axios from 'axios';
-axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
-axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
+// axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 
 
@@ -53,7 +53,7 @@ const style = {
 const Index = (props) => {
 
     return (
-        ! localStorage.getItem('token') && !props.isAuthenticated ?
+        ! props.isAuthenticated ?
             <Redirect to='/login'></Redirect>
             :
             <Container fluid style={{ backgroundColor: mainDark }}>

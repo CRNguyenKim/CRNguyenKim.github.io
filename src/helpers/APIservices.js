@@ -13,9 +13,7 @@ export const APIoptions = {
 
 export const APIversion = 'v1'
 export const timestampKey = 'day';
-export const apiEndPoint = `/api/${APIversion}/dashboard`;
-export const APIkey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsImFkbWluIjp0cnVlLCJpYXQiOjE1NjA5NjQ0MTd9.k89Ufa2OiY3fXCPbRIHzLPWpiphy-G6O6Q-zo57gEeg';
-
+export const apiEndPoint = `/api/dashboard`;
 
 export const extractDataByKey = (data, key) => {
     const res = data.map(val =>  val[key]);
@@ -54,13 +52,5 @@ export const extractFromTimestamp = (timestamps, extractKey) => {
 
         default:
             break      
-    }
-}
-
-export const configHeader = (token) => {
-    return {
-        headers:{
-            "x-access-token" : token
-        }
     }
 }

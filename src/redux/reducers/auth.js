@@ -2,8 +2,8 @@ import { USER_LOADING, USER_LOADED, USER_LOGOUT, LOGIN_FAILED, LOGIN_SUCCESS } f
 
 const initialState = {
     token: localStorage.getItem('token'),
-    isAuthenticated: null,
-    isLoading: null,
+    isAuthenticated: !!localStorage.getItem('token'),
+    isLoading: false,
     user: null
 }
 

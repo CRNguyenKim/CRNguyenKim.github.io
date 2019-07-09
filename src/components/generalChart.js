@@ -4,7 +4,7 @@ import ApexChart from 'apexcharts';
 import { secondaryDark, mainLight } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
-
+import {Badge} from 'react-bootstrap'
 
 
 
@@ -14,10 +14,10 @@ import { setAPIOption, appendSeries, setData, setTimeCountdown } from '../redux/
 import { extractDataByKey, serialData, timestampKey, apiEndPoint } from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
+import {NODATA, UNAUTHORIZED} from '../redux/actions/types';
 
 //state template
-axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
-axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
 
 const chartName = 'generalChart';
 const strokeWidth = 2;
@@ -39,6 +39,7 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            dataError: '',
             countdown: '',
             series: [],
             optionsMixedChart: {
@@ -116,7 +117,7 @@ class Index extends Component {
                     limit: limit
                 },
                 headers: {
-                    "x-access-token": this.props.auth.token
+                    "Authorization": `Bearer ${this.props.auth.token}`
                 }
             })
             .then(res => res.data.data)
@@ -144,10 +145,27 @@ class Index extends Component {
                         })
                     }
                 }
-                catch (err){
-
-                }
+                catch (err){}
                 store.dispatch(setData([series], chartName))
+                
+                //catching empty data
+                if(Math.max(...data) === 0)
+                    this.setState({
+                        dataError: NODATA
+                    })
+                else
+                    this.setState({
+                        dataError: ''
+                    })
+
+               
+            })
+            .catch(err => {
+                if(err.response.status === 401){
+                    this.setState({
+                        dataError: UNAUTHORIZED
+                    })
+                }
             })
 
     }
@@ -195,9 +213,17 @@ class Index extends Component {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '45vw' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
+                {
+                    this.state.dataError === UNAUTHORIZED && 
+                    <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
+                }
+                {
+                    this.state.dataError === NODATA &&
+                    <Badge variant="secondary">Data is empty!</Badge>
+                }
                 <Chart options={this.state.optionsMixedChart}
-                    series={this.props.options.data}
-                    type='line' />
+                       series={this.props.options.data}
+                       type='line' />
             </div>
         );
     }

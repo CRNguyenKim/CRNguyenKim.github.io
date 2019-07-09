@@ -37,3 +37,8 @@ export const CLEAR_MESSAGES = 'CLEAR_MESSAGES';
 
 
 
+export const NODATA = 'NODATA';
+export const UNAUTHORIZED = 'UNAUTHORIZED';
+
+
+

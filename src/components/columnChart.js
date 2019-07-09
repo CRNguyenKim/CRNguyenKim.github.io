@@ -11,9 +11,12 @@ import { setAPIOption, appendSeries, setSeries, setTimeCountdown } from '../redu
 import { extractDataByKey, serialData, timestampKey, apiEndPoint } from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
+import { Badge } from 'react-bootstrap';
+import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
+
 //state template
-axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
-axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
+
 
 const chartName = 'columnChart';
 const strokeWidth = 2;
@@ -41,6 +44,7 @@ class Index extends Component {
 
 
         this.state = {
+            dataError: '',
             locations: [],
             series: [],
             optionsMixedChart: {
@@ -118,12 +122,20 @@ class Index extends Component {
             {
                 params: {},
                 headers: {
-                    "x-access-token": this.props.auth.token
+                    "Authorization": `Bearer ${this.props.auth.token}`
                 }
             })
             .then(res => res.data.data)
             .then(data => {
                 options.locations = extractDataByKey(data, 'location');
+                if (Math.max(...data) === 0)
+                    this.setState({
+                        dataError: NODATA
+                    })
+                else
+                    this.setState({
+                        dataError: ''
+                    })
             })
     }
 
@@ -143,7 +155,7 @@ class Index extends Component {
                     location: location
                 },
                 headers: {
-                    "x-access-token": this.props.auth.token
+                    "Authorization": `Bearer ${this.props.auth.token}`
                 }
             })
             .then(res => res.data.data)
@@ -183,8 +195,8 @@ class Index extends Component {
                             })
                         }
                     }
-                    }
-                catch (err){
+                }
+                catch (err) {
 
                 }
                 if (this.props.options.series.length === 5) {
@@ -220,7 +232,7 @@ class Index extends Component {
         const overrideOptions = {
             modes: 'total'
         }
- 
+
         axios.all(
             [1, 2, 3, 4, 5].map(rating => this.updateDataByType(
                 overrideOptions.modes,
@@ -240,8 +252,8 @@ class Index extends Component {
         this.resetTimer()
 
     }
-    componentWillUnmount(){
-        if(updateInterval)
+    componentWillUnmount() {
+        if (updateInterval)
             clearInterval(updateInterval)
     }
     render(props) {
@@ -254,6 +266,14 @@ class Index extends Component {
                     dropdown={['locations']}
                     countdown={this.props.options.countdown}
                 />
+                {
+                    this.state.dataError === UNAUTHORIZED &&
+                    <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
+                }
+                {
+                    this.state.dataError === NODATA &&
+                    <Badge variant="secondary">Data is empty!</Badge>
+                }
                 <Chart options={this.state.optionsMixedChart} series={this.state.series} type='bar' />
             </div>
         );

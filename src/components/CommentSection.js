@@ -3,12 +3,15 @@ import { Container, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
 import { secondaryDark, mainLight } from '../helpers/colors';
+import { Badge } from 'react-bootstrap';
+import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
+
 
 import { } from '../helpers/timeParser';
 
 import axios from 'axios';
-axios.defaults.baseURL = 'https://nguyenkim.herokuapp.com';
-axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
+
 
 const style = {
     container: {
@@ -34,6 +37,7 @@ export default class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            dataError: '',
             comments: []
         }
     }
@@ -45,13 +49,13 @@ export default class Index extends Component {
     update = () => {
 
         axios.get(
-            'api/v1/dashboard/comment?',
+            'api/dashboard/comment?',
             {
                 params: {
                     limit: limit
                 },
                 headers: {
-                    "x-access-token": localStorage.getItem('token')
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
                 }
             }
         )
@@ -59,13 +63,19 @@ export default class Index extends Component {
             .then(data => {
                 this.setState({ comments: data });
                 // this.state.comments.map(obj =>  <Comment rated={obj.rated} feedback={obj.comment} />  )
-            }
-
-            )
+                if (data.length === 0)
+                    this.setState({
+                        dataError: NODATA
+                    })
+                else
+                    this.setState({
+                        dataError: ''
+                    })
+            })
     }
 
-    componentWillUnmount(){
-        if(updateInterval)
+    componentWillUnmount() {
+        if (updateInterval)
             clearInterval(updateInterval)
     }
     render() {
@@ -73,12 +83,20 @@ export default class Index extends Component {
         return (
             <Container >
                 <Row>
-                    <div style={{ position: 'sticky', top: 0, background: secondaryDark, width: '90%', height:'10%', color:mainLight }}>
+                    <div style={{ position: 'sticky', top: 0, background: secondaryDark, width: '90%', height: '10%', color: mainLight }}>
                         <h3> Recent comments </h3>
                     </div>
                 </Row>
-                <Row style={{...style.container, maxHeight:'30vw'}}>
+                <Row style={{ ...style.container, maxHeight: '30vw' }}>
                     <ListGroup variant='flush' >
+                        {
+                            this.state.dataError === UNAUTHORIZED &&
+                            <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
+                        }
+                        {
+                            this.state.dataError === NODATA &&
+                            <Badge variant="secondary">Data is empty!</Badge>
+                        }
                         {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
                     </ListGroup>
                 </Row>

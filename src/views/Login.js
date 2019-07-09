@@ -33,19 +33,17 @@ const style = {
 
 
 class Index extends Component {
-    constructor(props){
-        super(props);
+    constructor(){
+        super();
         this.state = {
             username: '',
             password: '',
         }
     }
 
-    componentDidMount(){
-        this.setState({isAuthenticated: this.props.isAuthenticated})
-    }
 
     render(props) {
+        console.log(this.props.isAuthenticated)
         return (
             this.props.isAuthenticated ?
             <Redirect to='/'></Redirect>
@@ -107,11 +105,11 @@ class Index extends Component {
 }
 
 
-const mapStateToProps = (state) => (
-    {
+const mapStateToProps = (state) => {
+    return {
         isAuthenticated: state.auth.isAuthenticated,
         messages: state.messages
     }
-)
+}
 
 export default connect(mapStateToProps)(Index);
