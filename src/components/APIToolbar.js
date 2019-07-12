@@ -34,7 +34,7 @@ class RowOption extends Component {
                 this.props.dropdown ?
                     <Form.Group controlId="exampleForm.ControlSelect1">
                         <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight }}>
-                            <p style={{ margin: 0 }}> <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
+                            <p style={{ margin: 0 }}> {this.props.name.toUpperCase()} <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
                         </Col>
 
                         <Form.Control as="select" onChange={(e) => { this.props.onOptionChange(this.props.name, e.target.value) }}
@@ -53,9 +53,9 @@ class RowOption extends Component {
                     :
                     <Row style={{ ...style.responsive, ...style.rowOption }}>
                         <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight }}>
-                            <p style={{ margin: 0 }}> <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
+                            <p style={{ margin: 0, fontSize:'2vh' }}> {this.props.name.toUpperCase()} <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> </p>
                         </Col>
-                        <Col xs={9} md={9} xl={9} sm={9} lg={9} style={{ ...style.responsive, justifyContent: 'center' }}>
+                        <Col xs={8} md={8} xl={8} sm={8} lg={8} style={{ ...style.responsive, justifyContent: 'center' }}>
                             <ButtonGroup aria-label="Basic example">
                                 {
                                     this.props.data &&
@@ -101,7 +101,6 @@ class ToolbarQuery extends Component {
                                     onOptionChange={this.onOptionChange}
                                     selections={this.props.selections}
                                     dropdown={dropdown.includes(val)}
-
                                 />
                             })
                         }

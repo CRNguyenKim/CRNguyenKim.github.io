@@ -35,7 +35,7 @@ var options = {
 
 
 
-
+const ratingWords = ['really bad', 'bad', 'normal', 'good', 'very good']
 
 class Index extends Component {
 
@@ -164,7 +164,7 @@ class Index extends Component {
                 const data = extractDataByKey(res, keyMap[kind]);
                 const timestamps = extractDataByKey(res, timestampKey);
                 const categories = extractFromTimestamp(timestamps, duration)
-                const series = serialData(data, 'rating ' + type, store.getState().columnDashboard.views);
+                const series = serialData(data, `${type}.  ${ratingWords[type-1]}`, store.getState().columnDashboard.views);
                 store.dispatch(appendSeries(series, chartName));
 
                 // update ApexChart

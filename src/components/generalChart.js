@@ -211,7 +211,7 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', transition:'0.5s' }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', transition:'0.5s' , height:this.state.dataError === NODATA ? 'auto':'85vh' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
                 {
                     this.state.dataError === UNAUTHORIZED ?

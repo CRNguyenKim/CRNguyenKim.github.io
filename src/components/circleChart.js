@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Chart from 'react-apexcharts';
-import { mainLight, secondaryDark } from '../helpers/colors';
+import { mainLight, secondaryDark, ratingColors } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 
 import { Alert } from 'react-bootstrap';
@@ -39,7 +39,7 @@ class Index extends Component {
             dataError: '',
             data: [],
             options: {
-                labels: ['rating 1', 'rating 2', 'rating 3', 'rating 4', 'rating 5'],
+                labels: ['really bad', 'bad', 'normal', 'good', 'very good'],
                 chart: {
                     id: chartName,
                     width: '60%',
@@ -59,6 +59,7 @@ class Index extends Component {
                         }
                     },
                 },
+                colors: ratingColors,
                 fill: {
                     opacity: 0.9,
                 },
@@ -214,7 +215,7 @@ class Index extends Component {
     }
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh'}}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', height:this.state.dataError === NODATA ? '10vh': 'auto' }}>
                 <ToolbarQuery
                     options={options}
                     selections={this.props.options}
