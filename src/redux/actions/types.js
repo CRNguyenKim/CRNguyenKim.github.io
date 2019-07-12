@@ -22,7 +22,7 @@ export const APPEND_SERIES = 'APPEND_SERIES';
 export const USER_LOADED = 'USER_LOAD';
 export const USER_LOGOUT = 'USER_LOGOUT';
 export const USER_LOADING = 'USER_LOADING';
-
+export const ADMIN_LOADED = 'ADMIN_LOADED';
 
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILED = 'LOGIN_FAILED';

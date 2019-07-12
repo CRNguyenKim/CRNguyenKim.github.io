@@ -4,7 +4,7 @@ import ApexChart from 'apexcharts';
 import { secondaryDark, mainLight } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
-import {Badge} from 'react-bootstrap'
+import {Alert} from 'react-bootstrap'
 
 
 
@@ -161,7 +161,7 @@ class Index extends Component {
                
             })
             .catch(err => {
-                if(err.response && err.response.status === 401){
+                if(err.response && err.response.status === 403){
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -214,19 +214,20 @@ class Index extends Component {
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', transition:'0.5s' }}>
                 <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
                 {
-                    this.state.dataError === UNAUTHORIZED &&
-                    <Badge variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Badge>
-                }
-                {
-                    this.state.dataError === NODATA && this.state.dataError !== UNAUTHORIZED ?
-                    <Badge variant="secondary">
-                        <h2>
-                            Data is empty!
-                        </h2>
-                    </Badge> :
-                    <Chart options={this.state.optionsMixedChart}
-                    series={this.props.options.data}
-                    type='line' />
+                    this.state.dataError === UNAUTHORIZED ?
+                    <Alert variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Alert> :
+                    (
+                        this.state.dataError === NODATA ?
+                        <Alert variant="secondary">
+                            <h2>
+                                Data is empty!
+                            </h2>
+                        </Alert> :
+                        <Chart options={this.state.optionsMixedChart}
+                        series={this.props.options.data}
+                        type='line' />
+                    )
+
                 }
                 
             </div>

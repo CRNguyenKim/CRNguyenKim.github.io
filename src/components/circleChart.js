@@ -3,7 +3,7 @@ import Chart from 'react-apexcharts';
 import { mainLight, secondaryDark } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 
-import { Badge } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
 
 
@@ -160,7 +160,7 @@ class Index extends Component {
 
             })
             .catch(err => {
-                if(err.response && err.response.status === 401){
+                if(err.response && err.response.status === 403){
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -223,14 +223,18 @@ class Index extends Component {
                     countdown={tickCountdown}
                 />
                 {
-                    this.state.dataError === UNAUTHORIZED &&
-                    <Badge variant="danger"><h2>Couldn't retrieve data from sever. Make sure your account is admin account!</h2></Badge>
+                    this.state.dataError === UNAUTHORIZED ?
+                    <Alert variant="danger">
+                        Couldn't retrieve data from sever. Make sure your account is admin account!</Alert>
+                    :
+    
+                    (
+                        this.state.dataError === NODATA ?
+                        <Alert variant="secondary"> <h2>Data is empty!</h2></Alert> :
+                        <Chart options={this.state.options} series={this.props.options.data} type='donut' />
+                    )
                 }
-                {
-                    this.state.dataError === NODATA && this.state.dataError !== UNAUTHORIZED ?
-                    <Badge variant="secondary"> <h2>Data is empty!</h2></Badge> :
-                    <Chart options={this.state.options} series={this.props.options.data} type='donut' />
-                }
+                
                 
             </div>
         )

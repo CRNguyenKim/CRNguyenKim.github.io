@@ -43,7 +43,6 @@ class Index extends Component {
 
 
     render(props) {
-        console.log(this.props.isAuthenticated)
         return (
             this.props.isAuthenticated ?
             <Redirect to='/'></Redirect>
@@ -76,9 +75,6 @@ class Index extends Component {
                                     value={this.state.username}
                                     onChange={(e) => this.setState({username: e.target.value})}
                                     />
-                                <Form.Text className="text-muted" >
-                                    Admin login only!
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group controlId="formBasicPassword" lg>

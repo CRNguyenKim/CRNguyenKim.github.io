@@ -3,7 +3,7 @@ import { Container, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
 import { secondaryDark, mainLight } from '../helpers/colors';
-import { Badge } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
 
 
@@ -43,7 +43,8 @@ export default class Index extends Component {
     }
     componentDidMount() {
         this.update()
-        updateInterval = setInterval(this.update, 1000);
+        updateInterval = setInterval(this.update, 2000);
+
     }
 
     update = () => {
@@ -73,7 +74,7 @@ export default class Index extends Component {
                     })
             })
             .catch(err => {
-                if(err.response && err.response.status === 401){
+                if(err.response && err.response.status === 403){
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -97,21 +98,18 @@ export default class Index extends Component {
                 <Row style={{ ...style.container, maxHeight: '30vw' }}>
                         {
                             this.state.dataError === UNAUTHORIZED &&
-                            <Badge variant="danger">
-                                <h2>
+                            <Alert variant="danger">
                                 Couldn't retrieve data from sever. Make sure your account is admin account!
-                                </h2>
-                            </Badge>
+                            </Alert>
                         }
                         {
                             this.state.dataError === NODATA ?
-                            <Badge variant="secondary" style={{width:'100%'}}>
+                            <Alert variant="secondary" style={{width:'100%'}}>
                                 <h2>
                                 Data is empty!
                                 </h2>
-                            </Badge> :
+                            </Alert> :
                             <ListGroup variant='flush' >
-                        
                             {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
                             </ListGroup>
                         }

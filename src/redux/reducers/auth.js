@@ -1,4 +1,4 @@
-import { USER_LOADING, USER_LOADED, USER_LOGOUT, LOGIN_FAILED, LOGIN_SUCCESS } from '../actions/types';
+import { USER_LOADING, USER_LOADED, USER_LOGOUT, LOGIN_FAILED, LOGIN_SUCCESS, ADMIN_LOADED } from '../actions/types';
 
 const initialState = {
     token: localStorage.getItem('token'),
@@ -21,7 +21,6 @@ const auth = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                isAuthenticated: true,
                 user: action.payload.username
             }; 
 
@@ -31,7 +30,6 @@ const auth = (state = initialState, action) => {
                 ...state,
                 token: action.payload.token,
                 isLoading: false,
-                isAuthenticated: true,
                 user: action.payload.username
             }
 
@@ -45,7 +43,11 @@ const auth = (state = initialState, action) => {
                 isAuthenticated: false,
                 isLoading: false
             }
-
+        case ADMIN_LOADED:
+            return{
+                ...state,
+                isAuthenticated: true
+            }
         default:
             return state
     }
