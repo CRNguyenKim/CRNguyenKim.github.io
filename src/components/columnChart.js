@@ -4,6 +4,7 @@ import ApexChart from 'apexcharts';
 import { secondaryDark, ratingColors } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
+import propTypes from 'prop-types';
 
 import { connect } from 'react-redux';
 import store from '../redux/store';
@@ -25,24 +26,23 @@ var tickCountdown = 10;
 var updateInterval;
 
 var options = {
-    modes: [],
     durations: ['hour', 'day', 'month'],
     limits: [7, 12, 24],
     timer: [10, 60, 3600],
     views: ['column', 'area', 'line'],
-
 }
 
 
 
-const ratingWords = ['really bad', 'bad', 'normal', 'good', 'very good']
+const ratingWords = ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt']
 
 class Index extends Component {
+    static propTypes = {
+        
+    }
 
     constructor(props) {
         super(props);
-
-
         this.state = {
             dataError: '',
             locations: [],
@@ -197,9 +197,7 @@ class Index extends Component {
                         }
                     }
                 }
-                catch (err) {
-
-                }
+                catch (err) {}
                 if (this.props.options.series.length === 5) {
                     const newSeries = this.props.options.series.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0))
                     ApexChart.exec(chartName, 'updateSeries', newSeries)
@@ -245,11 +243,9 @@ class Index extends Component {
     }
 
     update = () => {
-
         const overrideOptions = {
             modes: 'total'
         }
-
         axios.all(
             [1, 2, 3, 4, 5].map(rating => this.updateDataByType(
                 overrideOptions.modes,

@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import Chart from 'react-apexcharts';
 import { mainLight, secondaryDark, ratingColors } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
+import propTypes from 'prop-types';
 
 import { Alert } from 'react-bootstrap';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
-
 
 //calling API
 import axios from 'axios';
@@ -16,30 +16,43 @@ import store from '../redux/store';
 import { setAPIOption, setData } from '../redux/actions/dashboards';
 import { connect } from 'react-redux';
 import { setTimeCountdown } from '../redux/actions/dashboards'
-import { extractDataByKey, apiEndPoint, APIkey } from '../helpers/APIservices';
+import { extractDataByKey, apiEndPoint} from '../helpers/APIservices';
 
 //state template
 var tickCountdown = 10;
-var updateInterval;
 const chartName = 'circleChart';
 axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
 
-const options = {
-    durations: ['day', 'month'],
-    timer: [10, 60, 3600],
-    locations: []
-}
 
 
 class Index extends Component {
 
+    static propTypes = {
+        options : propTypes.shape({
+            duration: propTypes.arrayOf(propTypes.string),
+            timer: propTypes.arrayOf(propTypes.number),
+            location: propTypes.arrayOf(propTypes.location)
+        }),
+        series: propTypes.arrayOf(propTypes.number),
+    }
+
+    static defaultProps = {
+        options: {
+            durations: ['day', 'month'],
+            timer: [10, 60, 3600],
+            locations: []
+        },
+        series: [],
+    }
+
     constructor(props) {
         super(props);
         this.state = {
+            _updateInterval: null,
             dataError: '',
             data: [],
             options: {
-                labels: ['really bad', 'bad', 'normal', 'good', 'very good'],
+                labels: ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt'],
                 chart: {
                     id: chartName,
                     width: '60%',
@@ -90,7 +103,7 @@ class Index extends Component {
                     }
                 },
                 tooltip: {
-                    enabled: false
+                    enabled: true
                 }
             }
         }
@@ -109,19 +122,20 @@ class Index extends Component {
             })
             .then(res => res.data.data)
             .then(data => {
-                options.locations = [firstOption].concat(extractDataByKey(data, 'location'));
+                this.props.options.locations = [firstOption].concat(extractDataByKey(data, 'location'));
             })
     }
 
     componentDidMount() {
+        this._tickCountdown = 10
         this.getLocations()
-        Object.keys(options).map(obj => store.dispatch(setAPIOption(obj, options[obj][0], chartName)))
+        Object.keys(this.props.options).map(obj => store.dispatch(setAPIOption(obj, this.props.options[obj][0], chartName)))
         this.update()
         this.resetTimer()
     }
 
 
-    updateDataByType(type, duration = 'hour', newData, location = '') {
+    updateDataByType(type, duration, newData, location) {
         const limit = 1;
         const selection = 'total'
         axios.get(`${apiEndPoint}/${selection}?`,
@@ -155,8 +169,6 @@ class Index extends Component {
                         this.setState({
                             dataError: ''
                         })
-                    
-
                 }
 
             })
@@ -171,30 +183,28 @@ class Index extends Component {
     }
 
     updateCountdown = () => {
-        if (tickCountdown === 0) {
+        if (this._tickCountdown === 0) {
             this.update();
             this.resetTimer()
         }
         else
-            tickCountdown -= 1
-        store.dispatch(setTimeCountdown(tickCountdown, chartName))
+            this._tickCountdown -= 1
+        store.dispatch(setTimeCountdown(this._tickCountdown, chartName))
     }
 
     resetTimer = () => {
-        if (updateInterval)
-            clearInterval(updateInterval);
-        tickCountdown = store.getState().circleDashboard.timer;
-        updateInterval = setInterval(this.updateCountdown, 1000)
+        if (this.state._updateInterval)
+            clearInterval(this.state._updateInterval);
+        this._tickCountdown = store.getState().circleDashboard.timer;
+        var interval = setInterval(this.updateCountdown, 1000)
+        this.setState({_updateInterval : interval})
     }
 
     update = () => {
         var newData = []
-
-        let duration = store.getState().circleDashboard.durations ? store.getState().circleDashboard.durations : options['durations'][0]
-        let location = store.getState().circleDashboard.locations ? store.getState().circleDashboard.locations : options['locations'][0]
-        if (location === 'all') {
-            location = ''
-        }
+        let duration = store.getState().circleDashboard.durations ? store.getState().circleDashboard.durations : this.props.options['durations'][0]
+        let location = store.getState().circleDashboard.locations ? store.getState().circleDashboard.locations : this.props.options['locations'][0]
+        if (location === 'all') { location = '' }
         axios.all(
             [1, 2, 3, 4, 5].map(val =>
                 this.updateDataByType(val, duration, newData, location))
@@ -203,40 +213,36 @@ class Index extends Component {
 
     optionChange = (option, value) => {
         store.dispatch(setAPIOption(option, value, chartName));
-
         this.update();
         this.resetTimer();
-
     }
 
     componentWillUnmount() {
-        if (updateInterval)
-            clearInterval(updateInterval)
+        if (this.state._updateInterval)
+            clearInterval(this.state._updateInterval)
     }
+
     render(props) {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', height:this.state.dataError === NODATA ? '10vh': 'auto' }}>
                 <ToolbarQuery
-                    options={options}
-                    selections={this.props.options}
+                    options={this.props.options}
+                    selections={this.props.optionsState}
                     onOptionChange={this.optionChange}
                     dropdown={['locations']}
-                    countdown={tickCountdown}
+                    countdown={this._tickCountdown}
                 />
                 {
                     this.state.dataError === UNAUTHORIZED ?
                     <Alert variant="danger">
                         Couldn't retrieve data from sever. Make sure your account is admin account!</Alert>
                     :
-    
                     (
                         this.state.dataError === NODATA ?
                         <Alert variant="secondary"> <h2>Data is empty!</h2></Alert> :
-                        <Chart options={this.state.options} series={this.props.options.data} type='donut' />
+                        <Chart options={this.state.options} series={this.props.optionsState.data} type='donut' />
                     )
                 }
-                
-                
             </div>
         )
     }
@@ -244,7 +250,7 @@ class Index extends Component {
 
 const mapStateToProps = (state) => (
     {
-        options: state.circleDashboard,
+        optionsState: state.circleDashboard,
         auth: state.auth
     }
 )

@@ -7,7 +7,7 @@ export const extractFromTimestamp = (timestamps, extractKey) => {
         case 'hour':
             return timestamps.map( time => { 
                 var t = new Date(time); 
-                return  + t.getHours() > 12 ? t.getHours() + 'PM': t.getHours() + 'AM'  });
+                return  + t.getHours() > 12 ? t.getHours() + ':00': t.getHours() + ':00'  });
 
         
         case 'day':

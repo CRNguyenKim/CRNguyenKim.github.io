@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
 import { secondaryDark, mainLight } from '../helpers/colors';
 import { Alert } from 'react-bootstrap';
+import {  ratingColors } from '../helpers/colors';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
 
 
@@ -26,11 +27,14 @@ var updateInterval;
 
 const limit = 20;
 const sastisfactionIcon = [faAngry, faFrown, faMeh, faSmile, faLaughBeam];
+const ratingWords = ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt']
 
 const Comment = (props) => {
     let d = new Date(props.date);
 
-    return <p > {d.toLocaleString()} <FontAwesomeIcon icon={sastisfactionIcon[props.rated - 1]} /> {props.feedback} </p>
+    return <p > {d.toLocaleString()} <FontAwesomeIcon style={{color: ratingColors[props.rated-1]}}icon={sastisfactionIcon[props.rated - 1]} />
+     <span style={{color: ratingColors[props.rated-1]}}> ({ratingWords[props.rated-1]} ) {props.feedback} </span>
+     </p>
 }
 
 export default class Index extends Component {
@@ -110,7 +114,7 @@ export default class Index extends Component {
                                 </h2>
                             </Alert> :
                             <ListGroup variant='flush' >
-                            {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
+                                {this.state.comments.map((obj, ind) => <Comment date={obj.created_at} rated={obj.rated} feedback={obj.comment} key={ind} />)}
                             </ListGroup>
                         }
                 </Row>
