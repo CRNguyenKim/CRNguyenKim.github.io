@@ -38,11 +38,13 @@ class RowOption extends Component {
         return (
             this.props.data.length ?
                 this.props.dropdown ?
-                    <Form.Group controlId="exampleForm.ControlSelect1">
+                    
+                        <Row style={{ ...style.responsive, ...style.rowOption,  }}>
                         <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight }}>
                             <p style={{ margin: 0, whiteSpace: 'nowrap' }}> <FontAwesomeIcon icon={ICONS_MAP[this.props.name.toUpperCase()]} /> {capitalize( this.props.name)}  </p>
                         </Col>
-
+                        <Col xs={8} md={8} xl={8} sm={8} lg={8} style={{ color: mainLight,}}>
+                        <Form.Group controlId="exampleForm.ControlSelect1">
                         <Form.Control as="select" onChange={(e) => { this.props.onOptionChange(this.props.name, e.target.value) }}
                             style={{ backgroundColor: secondaryDark, color: '#ffffff' }}>
                             {
@@ -53,9 +55,9 @@ class RowOption extends Component {
                                     </option>))
                             }
                         </Form.Control>
-
-
-                    </Form.Group>
+                        </Form.Group>
+                        </Col>
+                        </Row>
                     :
                     <Row style={{ ...style.responsive, ...style.rowOption }}>
                         <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight }}>
@@ -99,7 +101,7 @@ class ToolbarQuery extends Component {
         return (
             <Container fluid>
                 <Row>
-                    <Col xs={12} sm={12} md={12} xl={8} lg={8}>
+                    <Col xs={12} sm={12} md={12} xl={10} lg={10}>
                         {
                             Object.keys(this.props.options).map((val) => {
                                 return <RowOption
@@ -114,7 +116,7 @@ class ToolbarQuery extends Component {
                         }
                     </Col>
 
-                    <Col xs={12} sm={12} md={12} xl={4} lg={4}>
+                    <Col xs={12} sm={12} md={12} xl={2} lg={2}>
                         <Row style={{ ...style.responsive, ...style.rowOption }}>
                             <Col xs={3} md={3} xl={3} sm={3} lg={3} style={{ color: mainLight, ...style.responsive, }}>
                                 <p style={{ margin: 0 }}> <FontAwesomeIcon icon={faSyncAlt} />  </p>

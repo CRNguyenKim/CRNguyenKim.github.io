@@ -37,10 +37,6 @@ var options = {
 const ratingWords = ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt']
 
 class Index extends Component {
-    static propTypes = {
-        
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -132,7 +128,7 @@ class Index extends Component {
 
             })
             .catch(err => {
-                if (err.response.status === 401) {
+                if (err.response.status === 403) {
                     this.setState({
                         dataError: UNAUTHORIZED
                     })
@@ -164,8 +160,11 @@ class Index extends Component {
                 const data = extractDataByKey(res, keyMap[kind]);
                 const timestamps = extractDataByKey(res, timestampKey);
                 const categories = extractFromTimestamp(timestamps, duration)
-                const series = serialData(data, `${type}.  ${ratingWords[type-1]}`, store.getState().columnDashboard.views);
-                store.dispatch(appendSeries(series, chartName));
+                const series = serialData(data, `${type}.  ${ratingWords[type - 1]}`, store.getState().columnDashboard.views);
+                if (this.props.options.series.length <= 5) {
+                    store.dispatch(appendSeries(series, chartName));
+                }
+
 
                 // update ApexChart
                 try {
@@ -183,8 +182,6 @@ class Index extends Component {
                             }
                         })
                     }
-
-
                     else {
                         if (this.props.options.series.length === 5) {
                             ApexChart.exec(chartName, 'updateOptions', {
@@ -197,21 +194,35 @@ class Index extends Component {
                         }
                     }
                 }
-                catch (err) {}
+                catch (err) {
+                    this.setState({
+                        optionsMixedChart: {
+                            ...this.state.optionsMixedChart,
+                            yaxis: {
+                                tickAmount: 5,
+                                min: 0,
+                                max: Math.max(...this.props.options.series.map((obj) => Math.max(...obj.data)))
+                            }
+                        }
+                    })
+                }
                 if (this.props.options.series.length === 5) {
-                    const newSeries = this.props.options.series.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0))
-                    ApexChart.exec(chartName, 'updateSeries', newSeries)
+                    var newSeries = this.props.options.series.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0));
                     this.setState({
                         series: newSeries
-                    })
-                    if (Math.max(...newSeries.map(obj => Math.max(...obj.data))) === 0)
+                    });
+
+                    if (Math.max(...newSeries.map(obj => Math.max(...obj.data))) === 0) {
                         this.setState({
                             dataError: NODATA
                         })
-                    else
+                    }
+                    else {
                         this.setState({
                             dataError: ''
                         })
+                    }
+
                 }
             })
             .catch(err => {
@@ -221,7 +232,7 @@ class Index extends Component {
                     })
                 }
             })
-            
+
 
     }
 
@@ -263,12 +274,13 @@ class Index extends Component {
         store.dispatch(setAPIOption(option, value, chartName));
         this.update()
         this.resetTimer()
-
     }
+
     componentWillUnmount() {
         if (updateInterval)
             clearInterval(updateInterval)
     }
+
     render(props) {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh' }}>
@@ -281,19 +293,19 @@ class Index extends Component {
                 />
                 {
                     this.state.dataError === UNAUTHORIZED ?
-                    <Alert variant="danger">
-                        Couldn't retrieve data from sever. Make sure your account is admin account!
-                    </Alert>
-                    :
-                    (
-                        this.state.dataError === NODATA ?
-                        <Alert variant="secondary">
-                            <h2>
-                            Data is empty!
-                            </h2>
-                        </Alert> :
-                        <Chart options={this.state.optionsMixedChart} series={this.state.series} type='bar' />
-                    )
+                        <Alert variant="danger">
+                            Couldn't retrieve data from sever. Make sure your account is admin account!
+                        </Alert>
+                        :
+                        (
+                            this.state.dataError === NODATA ?
+                                <Alert variant="secondary">
+                                    <h2>
+                                        Data is empty!
+                                    </h2>
+                                </Alert> :
+                                <Chart options={this.state.optionsMixedChart} series={this.state.series} type='bar' />
+                        )
                 }
             </div>
         );

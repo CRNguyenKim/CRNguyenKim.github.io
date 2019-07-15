@@ -19,7 +19,7 @@ import { setTimeCountdown } from '../redux/actions/dashboards'
 import { extractDataByKey, apiEndPoint} from '../helpers/APIservices';
 
 //state template
-var tickCountdown = 10;
+
 const chartName = 'circleChart';
 axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
 
@@ -224,7 +224,7 @@ class Index extends Component {
 
     render(props) {
         return (
-            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', height:this.state.dataError === NODATA ? '10vh': 'auto' }}>
+            <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', height:this.state.dataError === NODATA ? 'auto': '90vh' }}>
                 <ToolbarQuery
                     options={this.props.options}
                     selections={this.props.optionsState}
