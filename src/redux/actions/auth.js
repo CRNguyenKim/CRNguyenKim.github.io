@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { USER_LOADING, USER_LOGOUT, USER_LOADED, LOGIN_SUCCESS, GET_ERROR, ADMIN_LOADED } from './types';
+import { USER_LOADING, USER_LOGOUT, LOGIN_SUCCESS, GET_ERROR, ADMIN_LOADED } from './types';
 import { baseURL } from '../../helpers/config'
 import { ERRORS_HEADING } from './error'
 axios.defaults.baseURL = baseURL;
