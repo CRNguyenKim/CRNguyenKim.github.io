@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { USER_LOADING, USER_LOGOUT, USER_LOADED, LOGIN_SUCCESS, GET_ERROR, ADMIN_LOADED } from './types';
+import { baseURL } from '../../helpers/config'
 import { ERRORS_HEADING } from './error'
-axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
-// axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = baseURL;
+
 
 export const loadAdmin = (_token) => (dispatch, getState) => {
 

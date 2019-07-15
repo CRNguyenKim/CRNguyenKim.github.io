@@ -4,14 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLaughBeam, faSmile, faMeh, faFrown, faAngry } from '@fortawesome/free-solid-svg-icons';
 import { secondaryDark, mainLight } from '../helpers/colors';
 import { Alert } from 'react-bootstrap';
-import {  ratingColors } from '../helpers/colors';
+import {  ratingColors, ratingWords, baseURL } from '../helpers/config';
+import propTypes from 'prop-types';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
-
-
-import { } from '../helpers/timeParser';
-
 import axios from 'axios';
-axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
+axios.defaults.baseURL = baseURL;
 
 
 const style = {
@@ -23,11 +20,10 @@ const style = {
     }
 }
 
-var updateInterval;
 
-const limit = 20;
+
+
 const sastisfactionIcon = [faAngry, faFrown, faMeh, faSmile, faLaughBeam];
-const ratingWords = ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt']
 
 const Comment = (props) => {
     let d = new Date(props.date);
@@ -38,6 +34,13 @@ const Comment = (props) => {
 }
 
 export default class Index extends Component {
+    static propTypes = {
+        limitComment : propTypes.number
+    }
+    static defaultProps = {
+        limitComment : 20
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -47,7 +50,7 @@ export default class Index extends Component {
     }
     componentDidMount() {
         this.update()
-        updateInterval = setInterval(this.update, 2000);
+        this._updateInterval = setInterval(this.update, 2000);
 
     }
 
@@ -57,7 +60,7 @@ export default class Index extends Component {
             'api/dashboard/comment?',
             {
                 params: {
-                    limit: limit
+                    limit: this.props.limitComment
                 },
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('token')}`
@@ -87,8 +90,8 @@ export default class Index extends Component {
     }
 
     componentWillUnmount() {
-        if (updateInterval)
-            clearInterval(updateInterval)
+        if (this._updateInterval)
+            clearInterval(this._updateInterval)
     }
     render() {
 

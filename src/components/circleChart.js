@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Chart from 'react-apexcharts';
-import { mainLight, secondaryDark, ratingColors } from '../helpers/colors';
+import { mainLight, secondaryDark,} from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import propTypes from 'prop-types';
 
 import { Alert } from 'react-bootstrap';
 import { NODATA, UNAUTHORIZED } from '../redux/actions/types';
-
+import { baseURL, ratingColors, ratingWords, apiEndPoint} from '../helpers/config'
 //calling API
 import axios from 'axios';
 
@@ -16,12 +16,10 @@ import store from '../redux/store';
 import { setAPIOption, setData } from '../redux/actions/dashboards';
 import { connect } from 'react-redux';
 import { setTimeCountdown } from '../redux/actions/dashboards'
-import { extractDataByKey, apiEndPoint} from '../helpers/APIservices';
+import { extractDataByKey} from '../helpers/APIservices';
 
-//state template
 
-const chartName = 'circleChart';
-axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
+axios.defaults.baseURL = baseURL;
 
 
 
@@ -31,9 +29,10 @@ class Index extends Component {
         options : propTypes.shape({
             duration: propTypes.arrayOf(propTypes.string),
             timer: propTypes.arrayOf(propTypes.number),
-            location: propTypes.arrayOf(propTypes.location)
+            location: propTypes.arrayOf(propTypes.string)
         }),
         series: propTypes.arrayOf(propTypes.number),
+        chartName: propTypes.string
     }
 
     static defaultProps = {
@@ -43,6 +42,7 @@ class Index extends Component {
             locations: []
         },
         series: [],
+        chartName: 'circleChart'
     }
 
     constructor(props) {
@@ -52,9 +52,9 @@ class Index extends Component {
             dataError: '',
             data: [],
             options: {
-                labels: ['Rất không tốt', 'Không tốt', 'Bình thường', 'Tốt', 'Rất tốt'],
+                labels: ratingWords,
                 chart: {
-                    id: chartName,
+                    id: this.props.chartName,
                     width: '60%',
                     foreColor: mainLight,
                     fontFamily: 'Helvetica, Arial, sans-serif',
@@ -127,9 +127,9 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        this._tickCountdown = 10
+        this._tickCountdown = this.props.options.timer[0]
         this.getLocations()
-        Object.keys(this.props.options).map(obj => store.dispatch(setAPIOption(obj, this.props.options[obj][0], chartName)))
+        Object.keys(this.props.options).map(obj => store.dispatch(setAPIOption(obj, this.props.options[obj][0], this.props.chartName)))
         this.update()
         this.resetTimer()
     }
@@ -157,8 +157,8 @@ class Index extends Component {
                 newData.push({ data: data, name: type })
                 if (newData.length === 5) {
                     newData.sort((a, b) => (a.name > b.name) ? 1 : ((a.name < b.name) ? -1 : 0));
-                    // ApexCharts.exec(chartName, 'updateSeries', extractDataByKey(newData, 'data'), chartName);
-                    store.dispatch(setData(extractDataByKey(newData, 'data'), chartName))
+                    // ApexCharts.exec(this.props.chartName, 'updateSeries', extractDataByKey(newData, 'data'), this.props.chartName);
+                    store.dispatch(setData(extractDataByKey(newData, 'data'), this.props.chartName))
 
                     //Check data is empty?
                     if (Math.max(...newData.map(obj => obj.data)) === 0)
@@ -189,7 +189,7 @@ class Index extends Component {
         }
         else
             this._tickCountdown -= 1
-        store.dispatch(setTimeCountdown(this._tickCountdown, chartName))
+        store.dispatch(setTimeCountdown(this._tickCountdown, this.props.chartName))
     }
 
     resetTimer = () => {
@@ -212,7 +212,7 @@ class Index extends Component {
     }
 
     optionChange = (option, value) => {
-        store.dispatch(setAPIOption(option, value, chartName));
+        store.dispatch(setAPIOption(option, value, this.props.chartName));
         this.update();
         this.resetTimer();
     }

@@ -4,37 +4,45 @@ import ApexChart from 'apexcharts';
 import { secondaryDark, mainLight } from '../helpers/colors';
 import ToolbarQuery from './APIToolbar';
 import axios from 'axios';
-import {Alert} from 'react-bootstrap'
+import {Alert} from 'react-bootstrap';
+import propTypes from 'prop-types';
+import {baseURL, timestampKey, apiEndPoint} from '../helpers/config'
 
 
 
 import { connect } from 'react-redux';
 import store from '../redux/store';
 import { setAPIOption, appendSeries, setData, setTimeCountdown } from '../redux/actions/dashboards';
-import { extractDataByKey, serialData, timestampKey, apiEndPoint } from '../helpers/APIservices';
+import { extractDataByKey, serialData } from '../helpers/APIservices';
 import { extractFromTimestamp } from '../helpers/timeParser';
 
 import {NODATA, UNAUTHORIZED} from '../redux/actions/types';
 
 //state template
-axios.defaults.baseURL = 'https://nk-asp.herokuapp.com';
-
-const chartName = 'generalChart';
-const strokeWidth = 2;
-
-var updateInterval;
-var tickCountdown = 10;
-
-const options = {
-    modes: [],
-    durations: ['hour', 'day', 'month'],
-    limits: [7, 12, 24],
-    timer: [10, 60, 3600],
-    views: ['area', 'line'],
-    categories: [],
-}
+axios.defaults.baseURL = baseURL;
 
 class Index extends Component {
+
+    static propTypes = {
+        options : propTypes.shape({
+            duration: propTypes.arrayOf(propTypes.string),
+            limits: propTypes.arrayOf(propTypes.number),
+            timer: propTypes.arrayOf(propTypes.number),
+            views: propTypes.arrayOf(propTypes.string)
+        }),
+        chartName: propTypes.string
+    }
+
+    static defaultProps = {
+        options: {
+            durations: ['hour', 'day', 'month'],
+            limits: [7, 12, 24],
+            timer: [10, 60, 3600],
+            views: ['area', 'line'],
+        },
+        chartName: 'generalChart'
+
+    }
 
     constructor(props) {
         super(props);
@@ -46,7 +54,7 @@ class Index extends Component {
                 chart: {
                     width: '100%',
                     background: secondaryDark,
-                    id: chartName,
+                    id: this.props.chartName,
                 },
                 title: {
                     text: 'Average customer rating over time',
@@ -55,7 +63,7 @@ class Index extends Component {
                 colors: [mainLight],
 
                 stroke: {
-                    width: strokeWidth,
+                    width: 2,
                     opacity: 1,
                     curve: 'smooth'
                 },
@@ -99,17 +107,23 @@ class Index extends Component {
 
 
     componentDidMount(props) {
-        Object.keys(options).map((obj) => store.dispatch(setAPIOption(obj, options[obj][0], chartName)));
-        this.updateDataByType(options['modes'][0], 1, options['durations'][0], options['limits'][0])
+        this._tickCountdown = this.props.options.timer[0]
+        this._updateInterval = null
+
+        Object.keys(this.props.options).map((obj) => store.dispatch(setAPIOption(obj, this.props.options[obj][0], this.props.chartName)));
+        this.updateDataByType( 1, this.props.options['durations'][0], this.props.options['limits'][0])
+
+        //start updating
         this.resetTimer()
     }
 
     resetSeries = () => {
-        ApexChart.exec(chartName, 'resetSeries')
+        ApexChart.exec(this.props.chartName, 'resetSeries')
     }
 
-    updateDataByType = (kind = null, rated = null, duration = null, limit = null) => {
-        axios.get(`${apiEndPoint}/avg?`,
+    updateDataByType = ( rated = null, duration = null, limit = null) => {
+        const dataFilterBy = 'avg'
+        axios.get(`${apiEndPoint}/${dataFilterBy}?`,
             {
                 params: {
                     rated: rated,
@@ -126,27 +140,24 @@ class Index extends Component {
                 const timestamps = extractDataByKey(res, timestampKey);
                 const categories = extractFromTimestamp(timestamps, duration)
                 const series = serialData(data, 'rating AVG', store.getState().generalDashboard.views);
-                store.dispatch(appendSeries(series, chartName));
+                store.dispatch(appendSeries(series, this.props.chartName));
                 // update ApexChart
                 try {
-                    ApexChart.exec(chartName, 'updateOptions', {
+                    ApexChart.exec(this.props.chartName, 'updateOptions', {
                         xaxis: {
                             categories: categories
                         }
                     });
-
-                    if (kind === 'avg') {
-                        ApexChart.exec(chartName, 'updateOptions', {
-                            yaxis: {
-                                min: 0,
-                                tickAmount: 5,
-                                max: 5
-                            }
-                        })
-                    }
+                    ApexChart.exec(this.props.chartName, 'updateOptions', {
+                        yaxis: {
+                            min: 0,
+                            tickAmount: 5,
+                            max: 5
+                        }
+                    })
                 }
                 catch (err){}
-                store.dispatch(setData([series], chartName))
+                store.dispatch(setData([series], this.props.chartName))
                 
                 //catching empty data
                 if(Math.max(...data) === 0)
@@ -157,8 +168,6 @@ class Index extends Component {
                     this.setState({
                         dataError: ''
                     })
-
-               
             })
             .catch(err => {
                 if(err.response && err.response.status === 403){
@@ -172,26 +181,25 @@ class Index extends Component {
 
 
     updateCountdown = () => {
-        if (tickCountdown === 0) {
+        if (this._tickCountdown === 0) {
             this.update();
             this.resetTimer()
         }
         else
-            tickCountdown -= 1
-        store.dispatch(setTimeCountdown(tickCountdown, chartName))
+            this._tickCountdown -= 1
+        store.dispatch(setTimeCountdown(this._tickCountdown, this.props.chartName))
     }
 
     resetTimer = () => {
-        if (updateInterval)
-            clearInterval(updateInterval);
-        tickCountdown = store.getState().generalDashboard.timer;
-        updateInterval = setInterval(this.updateCountdown, 1000);
+        if (this._updateInterval)
+            clearInterval(this._updateInterval);
+        this._tickCountdown = store.getState().generalDashboard.timer;
+        this._updateInterval = setInterval(this.updateCountdown, 1000);
 
     }
 
     update = () => {
         this.updateDataByType(
-            store.getState().generalDashboard.modes,
             1,
             store.getState().generalDashboard.durations,
             store.getState().generalDashboard.limits
@@ -200,19 +208,19 @@ class Index extends Component {
 
 
     optionChange = (option, value) => {
-        store.dispatch(setAPIOption(option, value, chartName));
+        store.dispatch(setAPIOption(option, value, this.props.chartName));
         this.update()
         this.resetTimer()
     }
     componentWillUnmount(){
-        if(updateInterval)
-            clearInterval(updateInterval)
+        if(this._updateInterval)
+            clearInterval(this._updateInterval)
     }
 
     render(props) {
         return (
             <div style={{ borderRadius: 0, marginTop: 10, display: 'flex', flexDirection: 'column', background: secondaryDark, minHeight: '10vh', transition:'0.5s' , height:this.state.dataError === NODATA ? 'auto':'90vh' }}>
-                <ToolbarQuery onOptionChange={this.optionChange} options={options} selections={this.props.options} countdown={this.props.options.countdown} />
+                <ToolbarQuery onOptionChange={this.optionChange} options={this.props.options} selections={this.props.optionsState} countdown={this.props.optionsState.countdown} />
                 {
                     this.state.dataError === UNAUTHORIZED ?
                     <Alert variant="danger">Couldn't retrieve data from sever. Make sure your account is admin account!</Alert> :
@@ -224,12 +232,10 @@ class Index extends Component {
                             </h2>
                         </Alert> :
                         <Chart options={this.state.optionsMixedChart}
-                        series={this.props.options.data}
+                        series={this.props.optionsState.data}
                         type='line' />
                     )
-
                 }
-                
             </div>
         );
     }
@@ -237,7 +243,7 @@ class Index extends Component {
 
 const mapStateToProps = (state) => (
     {
-        options: state.generalDashboard,
+        optionsState: state.generalDashboard,
         auth: state.auth
     }
 )

@@ -1,6 +1,3 @@
-const weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Friday', 'Sat'];
-const months = ["Jan", "Feb", "Mar","Apr", "May","June", "July", "Aug", "Sep", "Oct","Nov","Dec" ];
-
 export const extractFromTimestamp = (timestamps, extractKey) => {
 
     switch(extractKey){
